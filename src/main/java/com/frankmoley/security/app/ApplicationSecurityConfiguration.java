@@ -1,6 +1,5 @@
 package com.frankmoley.security.app;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,9 +28,6 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter{
 
-    // For ldap authentication
-
-
     @Bean
     public GrantedAuthoritiesMapper authoritiesMapper(){
         SimpleAuthorityMapper authorityMapper = new SimpleAuthorityMapper();
@@ -53,19 +49,14 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .passwordCompare()
                 .passwordEncoder(new LdapShaPasswordEncoder())
                 .passwordAttribute("userPassword");
-
-
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        // Http form based authentication config
-
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/","index","/css/*","/js/*").permitAll()
+                .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -75,24 +66,6 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .clearAuthentication(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/logout-success").permitAll();
-
-        /*  // Http  basic Auth config
-        http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/","index","/css/*","/js/*").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();*/
     }
 
-    /*// In Memory http-basic authentication
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        List<UserDetails> users = new ArrayList<>();
-        users.add(User.withDefaultPasswordEncoder().username("alex").password("1234").roles("USER","ADMOIN").build());
-        users.add(User.withDefaultPasswordEncoder().username("muffin").password("1234").roles("USER").build());
-        return new InMemoryUserDetailsManager(users);
-    }*/
 }

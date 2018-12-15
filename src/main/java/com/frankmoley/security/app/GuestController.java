@@ -5,8 +5,6 @@ import com.frankmoley.security.app.domain.GuestModel;
 import com.frankmoley.security.app.service.GuestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,26 +34,21 @@ public class GuestController {
         return "index";
     }
 
-    @GetMapping(value = "/login")
+    @GetMapping(value="/login")
     public String getLoginPage(Model model){
         return "login";
     }
 
-    @GetMapping(value = "/logout-success")
+    @GetMapping(value="/logout-success")
     public String getLogoutPage(Model model){
         return "logout";
     }
-
 
     @GetMapping(value="/guests")
     @PreAuthorize("hasRole('ROLE_USER')")
     public String getGuests(Model model){
         List<Guest> guests = this.guestService.getAllGuests();
         model.addAttribute("guests", guests);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // logged in user name
-        model.addAttribute("userName",username);
         return "guests-view";
     }
 
